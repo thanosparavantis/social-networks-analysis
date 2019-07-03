@@ -25,15 +25,16 @@ print('2o erotima')
 print()
 
 N = 5
-t_list = [t_min + j * (t_max - t_min) // (N - 1) for j in range(N)]
+n = N + 1
 
-print(f'N=5')
-[print(f't{idx}={item}') for idx, item in enumerate(t_list)]
+t_list = [t_min + j * (t_max - t_min) // (n - 1) for j in range(n)]
+
+[print(f'Bound t{idx}={item}') for idx, item in enumerate(t_list)]
 print()
 
-T_list = [[t_list[j - 1], t_list[j]] for j in range(1, N)]
+T_list = [[t_list[j - 1], t_list[j]] for j in range(1, n)]
 
-[print(f'T{idx}-{idx+1}={item}') for idx, item in enumerate(T_list)]
+[print(f'Period T{idx + 1}={item}') for idx, item in enumerate(T_list)]
 
 # 3o erotima
 print()
