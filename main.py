@@ -1,5 +1,7 @@
 import pandas as pd
 import networkx as nx
+import numpy as np
+
 filepath = './sx-stackoverflow.txt'
 
 print('StackOverflow Dataset')
@@ -21,22 +23,19 @@ print(f't_max: {t_max}')
 print()
 print('2o erotima')
 print()
-N = input('Enter N parameter: ')
-N = int(N)
-DT = t_max - t_min
-dt = DT // N
-print(f'DT: {DT}')
-print(f'dt: {dt}')
 
-t_list = []
-for j in range(N):
-    t_list.append(t_min + j * dt)
+N = 5
+t_list = [t_min + j * (t_max - t_min) // (N - 1) for j in range(N)]
 
+print(f'N=5')
+[print(f't{idx}={item}') for idx, item in enumerate(t_list)]
 print()
-print(t_list)
+
+T_list = [[t_list[j], t_list[j + 1]] for j in range(N - 1)]
+
+[print(f'T{idx}-{idx+1}={item}') for idx, item in enumerate(T_list)]
 
 # 3o erotima
 print()
 print('3o erotima')
 print()
-
