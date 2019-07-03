@@ -31,7 +31,7 @@ print(f'N=5')
 [print(f't{idx}={item}') for idx, item in enumerate(t_list)]
 print()
 
-T_list = [[t_list[j], t_list[j + 1]] for j in range(N - 1)]
+T_list = [[t_list[j - 1], t_list[j]] for j in range(1, N)]
 
 [print(f'T{idx}-{idx+1}={item}') for idx, item in enumerate(T_list)]
 
