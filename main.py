@@ -49,7 +49,7 @@ def e_star__a_calc(nodes, edges):
     e_star = []
 
     idx = 0
-    for i in range(1,len(edges)):
+    for i in range(1, len(edges)):
         e_star.append([])
 
         for tuple in edges[i]:
@@ -139,7 +139,8 @@ def predict_similarity(CN, GD, jaccard, adamic, preferential, e_star, idx):
         PA[u, v] = p
 
     param_GD, param_CN, param_JC, param_A, param_PA = -1, -1, -1, -1, -1
-    while (param_GD < 0 or param_GD >= 1 or param_CN < 0 or param_CN >= 1 or param_JC < 0 or param_JC >= 1 or param_A < 0 or param_A >= 1 or param_PA < 0 or param_PA >= 1):
+    while (
+            param_GD < 0 or param_GD >= 1 or param_CN < 0 or param_CN >= 1 or param_JC < 0 or param_JC >= 1 or param_A < 0 or param_A >= 1 or param_PA < 0 or param_PA >= 1):
         param_GD = float(input("Give param_GD. Must be 0 < param_GD <= 1\n"))
         param_CN = float(input("Give param_CN. Must be 0 < param_CN <= 1\n"))
         param_JC = float(input("Give param_JC. Must be 0 < param_JC <= 1\n"))
@@ -157,11 +158,11 @@ def predict_similarity(CN, GD, jaccard, adamic, preferential, e_star, idx):
 
 
 def prediction_calc(param, matrix, e_star, name):
-    matrix = {key:value for key, value in matrix.items() if value != 0}
+    matrix = {key: value for key, value in matrix.items() if value != 0}
     matrix = sorted(matrix.items(), key=lambda kv: kv[1])
 
     temp = int(round(param * len(matrix)))
-    temp_values, temp_total_elements = list(islice(matrix,temp,None)), len(matrix) - temp
+    temp_values, temp_total_elements = list(islice(matrix, temp, None)), len(matrix) - temp
     temp_count = 0
     temp_values = [x[0] for x in temp_values]
 
@@ -171,11 +172,10 @@ def prediction_calc(param, matrix, e_star, name):
 
     try:
         temp_success_rate = (temp_count / float(temp_total_elements)) * 100
-        print ("The success rate for", name, "is: ",temp_success_rate, "%")
+        print("The success rate for", name, "is: ", temp_success_rate, "%")
 
     except:
-        print ("Cannot divide with 0!!!")
-
+        print("Cannot divide with 0!!!")
 
 
 # Load data
