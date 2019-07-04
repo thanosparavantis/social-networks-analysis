@@ -7,6 +7,9 @@ from itertools import islice
 def createPlots(num, graph):
     if graph != set():
         nx.draw(graph)
+        plt.title("Subgraph")
+        plt.savefig('subgraph%d' % num)
+        plt.clf()
         # 4.1 Degree centrality plot
         plt.hist(list(nx.degree_centrality(graph).values()))
         plt.title('Degree Centrality')
