@@ -44,6 +44,7 @@ def createPlots(num, graph):
         plt.clf()
         print("All centralities have been plotted and saved !!")
 
+
 def e_star__a_calc(N, nodes):
     e_star = []
     for idx in range(1, N):
@@ -54,6 +55,7 @@ def e_star__a_calc(N, nodes):
 
     return e_star
 
+
 def e_star__b_calc(N, nodes):
     e_star = []
     for idx in range(0, N - 1):
@@ -63,6 +65,7 @@ def e_star__b_calc(N, nodes):
             break
 
     return e_star
+
 
 def v_star_calc(N, edges):
     v_star = []
@@ -102,33 +105,30 @@ def similarities_matrices_calc(graphs):
         # 6.3 find the jaccard coefficient
         jaccard = nx.jaccard_coefficient(G)
 
-        #6.4 find the adamic adar
+        # 6.4 find the adamic adar
         adamic = nx.adamic_adar_index(G)
 
-        #6.5 find the preferential attachment
+        # 6.5 find the preferential attachment
         preferential = nx.preferential_attachment(G)
 
-    return CN,GD,jaccard,adamic,preferential
+    return CN, GD, jaccard, adamic, preferential
 
 
-def predict_similarity(CN,GD,jaccard,adamic,preferential,eStar):
-        jac_co, dist, pref_attach = {}, {}, {}
-        for u, v, p in jaccard:
-            jac_co[u, v] = p
-        for u, v, p in adamic:
-            dist[u, v] = p
-        for u, v, p in preferential:
-            pref_attach[u, v] = p
+def predict_similarity(CN, GD, jaccard, adamic, preferential, eStar):
+    jac_co, dist, pref_attach = {}, {}, {}
+    for u, v, p in jaccard:
+        jac_co[u, v] = p
+    for u, v, p in adamic:
+        dist[u, v] = p
+    for u, v, p in preferential:
+        pref_attach[u, v] = p
 
-        distance = GD
-        neighbors = CN
+    distance = GD
+    neighbors = CN
 
-        # TODO: SINEXEIA APO EDO gia erotima 7 it just needs the prediction function applied to each matrix
+    # TODO: SINEXEIA APO EDO gia erotima 7 it just needs the prediction function applied to each matrix
 
-        return
-
-
-
+    return
 
 
 # Load data
@@ -156,14 +156,12 @@ t_list = []
 for j in range(N + 1):
     t_list.append(t_min + j * ((t_max - t_min) // N))
 
-
 T_list = []
 for j in range(1, N + 1):
     if (1 <= j < N):
-        T_list.append([t_list[j-1], t_list[j]-1])
+        T_list.append([t_list[j - 1], t_list[j] - 1])
     else:
-        T_list.append([t_list[j-1], t_list[j]])
-
+        T_list.append([t_list[j - 1], t_list[j]])
 
 # 3rd part
 print('\n-- 3rd part --------------------------------------')
@@ -188,7 +186,6 @@ for idx, period in enumerate(T_list):
 
 print('\n Sub-graphs have been created!')
 
-
 # 4th part
 print('\n-- 4th part --------------------------------------')
 for idx in range(len(graphs)):
@@ -196,7 +193,6 @@ for idx in range(len(graphs)):
 
     if graphs[idx] != nx.empty_graph:
         createPlots(idx, graphs[idx])
-
 
 # 5th part
 nodes = []
@@ -212,84 +208,11 @@ e_star__b = e_star__b_calc(N, edges)
 
 # 6th && 7th part
 print('\n-- 6th and 7th part --------------------------------------')
-for idx in range (N-1):
+for idx in range(N - 1):
     print(idx)
     if e_star__a[idx] != set():
-        #6th part
-        CN,GD,jaccard,adamic,preferential = similarities_matrices_calc(graphs)
-        #7th part
+        # 6th part
+        CN, GD, jaccard, adamic, preferential = similarities_matrices_calc(graphs)
+        # 7th part
         # TODO: SINEXEIA APO EDO gia erotima 7
-        predict_similarity(CN,GD,jaccard,adamic,preferential,e_star__a[idx])
-
-
-
-
-
-
-
-# t_list = [t_min + j * ((t_max - t_min) // (n - 1)) for j in range(n)]
-#
-# [print(f'Bound t{idx}={item}') for idx, item in enumerate(t_list)]
-# print()
-#
-# T_list = [[t_list[j - 1], t_list[j]] for j in range(1, n)]
-#
-# [print(f'Period T{idx + 1}={item}') for idx, item in enumerate(T_list)]
-
-
-# num = 0
-# for _, row in df.iterrows():
-#     source_id = row['source_id']
-#     target_id = row['target_id']
-#     timestamp = row['timestamp']
-#     # G = nx.DiGraph()  # empty graph
-#     for idx, period in enumerate(T_list):
-#         min = period[0]
-#         max = period[1]
-# #
-#         if (idx == len(T_list) - 1 and min <= timestamp <= max) or min <= timestamp < max:
-#             G = graphs[idx]
-#             G.add_node(source_id)
-#             G.add_node(target_id)
-#             G.add_edge(source_id, target_id)
-#             break
-
-
-#
-#
-#     # erotima 4
-#     print()
-#     print('4o erotima')
-#     print()
-#     G.remove_edges_from(G.selfloop_edges())
-#     if G != nx.empty_graph:
-#         createPlots(num, G)
-#
-#     # erotima 5
-#     nodes = G.nodes
-#     edges = G.edges
-#
-#     Vs = []
-#     Es = []
-#     for i in range(num):
-#         try:
-#             tmp = set(nodes[i + 1]) - set(nodes[i])
-#             tmp2 = set(edges[i + 1]) - set(edges[i])
-#             Vs.append(set(nodes[i]) - set(tmp))
-#             Es.append(set(nodes[i]) - set(tmp2))
-#             continue
-#         except:
-#             break
-#     print("V star")
-#     print(Vs)
-#     print()
-#     print("E star")
-#     print(Es)
-#     num += 1
-#
-# for graph in graphs:
-#     nx.draw(graph, **{
-#         'node_size': 10,
-#         'width': 1,
-#     })
-#     plt.show()
+        predict_similarity(CN, GD, jaccard, adamic, preferential, e_star__a[idx])
