@@ -1,7 +1,7 @@
 import pandas as pd
 import networkx as nx
-import numpy as np
 import matplotlib.pyplot as plt
+from itertools import islice
 
 
 def createPlots(num, graph):
@@ -45,24 +45,36 @@ def createPlots(num, graph):
         print("All centralities have been plotted and saved !!")
 
 
-def e_star__a_calc(N, nodes):
+def e_star__a_calc(nodes, edges):
     e_star = []
-    for idx in range(1, N):
-        try:
-            e_star.append(set(nodes[idx - 1]).intersection(nodes[idx]))  # find the common values
-        except:
-            break
+
+    idx = 0
+    for i in range(1,len(edges)):
+        e_star.append([])
+
+        for tuple in edges[i]:
+            if (tuple[0] in nodes[i - 1]) and (tuple[1] in nodes[i - 1]):
+                e_star[idx].append(tuple)  # find the common values
+
+        e_star[idx] = list(set(e_star[idx]))
+        idx += 1
 
     return e_star
 
 
-def e_star__b_calc(N, nodes):
+def e_star__b_calc(nodes, edges):
     e_star = []
-    for idx in range(0, N - 1):
-        try:
-            e_star.append(set(nodes[idx]).intersection(nodes[idx + 1]))  # find the common values
-        except:
-            break
+
+    idx = 0
+    for i in range(0, len(edges) - 1):
+        e_star.append([])
+
+        for tuple in edges[i]:
+            if (tuple[0] in nodes[i - 1]) and (tuple[1] in nodes[i - 1]):
+                e_star[i].append(tuple)  # find the common values
+
+        e_star[idx] = list(set(e_star[idx]))
+        idx += 1
 
     return e_star
 
@@ -79,56 +91,91 @@ def v_star_calc(N, edges):
 
 
 def similarities_matrices_calc(graphs):
-    for idx in range(len(graphs)):
+    # for idx in range(len(graphs)):
 
-        nodes = list(graphs[idx].nodes)
-        GD = {}
-        CN = {}
-        G = graphs[idx].to_undirected()  # graph must be undirected in order for functions to work
+    nodes = list(graphs.nodes)
+    GD = {}
+    CN = {}
+    G = graphs.to_undirected()  # graph must be undirected in order for functions to work
 
-        for first_node in nodes:
-            for second_node in nodes:
-                ## 6.1 find the common neighbors of nodes
-                neighbors = []
-                temp_neighbors = nx.common_neighbors(G, first_node, second_node)
-                for p in temp_neighbors:
-                    neighbors.append(p)
-                CN[first_node, second_node] = len(neighbors)
+    for first_node in nodes:
+        for second_node in nodes:
 
-                # 6.2 find the graph distance
-                try:
-                    distance = nx.shortest_path_length(G, first_node, second_node)
-                    GD[first_node, second_node] = distance
-                except:
-                    continue
+            ## 6.1 find the common neighbors of nodes
+            neighbors = []
+            temp_neighbors = nx.common_neighbors(G, first_node, second_node)
 
-        # 6.3 find the jaccard coefficient
-        jaccard = nx.jaccard_coefficient(G)
+            for p in temp_neighbors:
+                neighbors.append(p)
 
-        # 6.4 find the adamic adar
-        adamic = nx.adamic_adar_index(G)
+            CN[first_node, second_node] = len(neighbors)
 
-        # 6.5 find the preferential attachment
-        preferential = nx.preferential_attachment(G)
+            # 6.2 find the graph distance
+            try:
+                distance = nx.shortest_path_length(G, first_node, second_node)
+                GD[first_node, second_node] = distance
+            except:
+                continue
+
+    # 6.3 find the jaccard coefficient
+    jaccard = nx.jaccard_coefficient(G)
+
+    # 6.4 find the adamic adar
+    adamic = nx.adamic_adar_index(G)
+
+    # 6.5 find the preferential attachment
+    preferential = nx.preferential_attachment(G)
 
     return CN, GD, jaccard, adamic, preferential
 
 
-def predict_similarity(CN, GD, jaccard, adamic, preferential, eStar):
-    jac_co, dist, pref_attach = {}, {}, {}
+def predict_similarity(CN, GD, jaccard, adamic, preferential, e_star, idx):
+    JA, A, PA = {}, {}, {}
     for u, v, p in jaccard:
-        jac_co[u, v] = p
+        JA[u, v] = p
     for u, v, p in adamic:
-        dist[u, v] = p
+        A[u, v] = p
     for u, v, p in preferential:
-        pref_attach[u, v] = p
+        PA[u, v] = p
 
-    distance = GD
-    neighbors = CN
+    param_GD, param_CN, param_JC, param_A, param_PA = -1, -1, -1, -1, -1
+    while (param_GD < 0 or param_GD >= 1 or param_CN < 0 or param_CN >= 1 or param_JC < 0 or param_JC >= 1 or param_A < 0 or param_A >= 1 or param_PA < 0 or param_PA >= 1):
+        param_GD = float(input("Give param_GD. Must be 0 < param_GD <= 1\n"))
+        param_CN = float(input("Give param_CN. Must be 0 < param_CN <= 1\n"))
+        param_JC = float(input("Give param_JC. Must be 0 < param_JC <= 1\n"))
+        param_A = float(input("Give param_A. Must be 0 < param_A <= 1\n"))
+        param_PA = float(input("Give param_PA. Must be 0 < param_PA <= 1\n"))
 
-    # TODO: SINEXEIA APO EDO gia erotima 7 it just needs the prediction function applied to each matrix
+    print(f'++ Result for set of node {idx} +++++++++++++++++++++++++++++++++++++')
+    prediction_calc(param_GD, GD, e_star, 'Graph Distance')
+    prediction_calc(param_CN, CN, e_star, 'Common Neighbors')
+    prediction_calc(param_JC, JA, e_star, 'Jaccard Coefficient')
+    prediction_calc(param_A, A, e_star, 'Adamic Adar')
+    prediction_calc(param_PA, PA, e_star, 'Preferential Attachment')
 
     return
+
+
+def prediction_calc(param, matrix, e_star, name):
+    matrix = {key:value for key, value in matrix.items() if value != 0}
+    matrix = sorted(matrix.items(), key=lambda kv: kv[1])
+
+    temp = int(round(param * len(matrix)))
+    temp_values, temp_total_elements = list(islice(matrix,temp,None)), len(matrix) - temp
+    temp_count = 0
+    temp_values = [x[0] for x in temp_values]
+
+    for i in range(temp_total_elements):
+        if (temp_values[i]) in (list(e_star)):
+            temp_count += 1
+
+    try:
+        temp_success_rate = (temp_count / float(temp_total_elements)) * 100
+        print ("The success rate for", name, "is: ",temp_success_rate, "%")
+
+    except:
+        print ("Cannot divide with 0!!!")
+
 
 
 # Load data
@@ -149,8 +196,7 @@ print(f't_max: {t_max}')
 
 # 2nd part
 print('\n-- 2nd part --------------------------------------')
-# print('\n Enter partitioning value (it should be an integer):')
-N = int(input("\n Enter partitioning value (it should be an integer): "), 10)
+N = int(input("\n Enter partitioning value (it must be an integer): "), 10)
 
 t_list = []
 for j in range(N + 1):
@@ -203,16 +249,15 @@ for idx in range(len(graphs)):
     edges.append(graphs[idx].edges)
 
 v_star = v_star_calc(N, nodes)
-e_star__a = e_star__a_calc(N, edges)
-e_star__b = e_star__b_calc(N, edges)
+e_star__a = e_star__a_calc(v_star, edges)
+e_star__b = e_star__b_calc(v_star, edges)
 
 # 6th && 7th part
 print('\n-- 6th and 7th part --------------------------------------')
 for idx in range(N - 1):
-    print(idx)
     if e_star__a[idx] != set():
         # 6th part
-        CN, GD, jaccard, adamic, preferential = similarities_matrices_calc(graphs)
+        CN, GD, jaccard, adamic, preferential = similarities_matrices_calc(graphs[idx])
+
         # 7th part
-        # TODO: SINEXEIA APO EDO gia erotima 7
-        predict_similarity(CN, GD, jaccard, adamic, preferential, e_star__a[idx])
+        predict_similarity(CN, GD, jaccard, adamic, preferential, e_star__a[idx], idx)
