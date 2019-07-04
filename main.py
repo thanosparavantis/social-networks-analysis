@@ -10,37 +10,37 @@ def createPlots(num, graph):
         # 4.1 Degree centrality plot
         plt.hist(list(nx.degree_centrality(graph).values()))
         plt.title('Degree Centrality')
-        plt.savefig('Degree%d' % num)
+        plt.savefig('Degree%dist' % num)
         plt.clf()
         # 4.2 Degree centrality plot
         plt.hist(list(nx.in_degree_centrality(graph).values()))
         plt.title('In Degree Centrality')
-        plt.savefig('InDegree%d' % num)
+        plt.savefig('InDegree%dist' % num)
         plt.clf()
         # 4.3 Degree centrality plot
         plt.hist(list(nx.out_degree_centrality(graph).values()))
         plt.title('Out Degree Centrality')
-        plt.savefig('OutDegree%d' % num)
+        plt.savefig('OutDegree%dist' % num)
         plt.clf()
         # 4.4 Degree centrality plot
         plt.hist(list(nx.closeness_centrality(graph).values()))
         plt.title('Closeness Centrality')
-        plt.savefig('Closeness%d' % num)
+        plt.savefig('Closeness%dist' % num)
         plt.clf()
         # 4.5 Degree centrality plot
         plt.hist(list(nx.betweenness_centrality(graph).values()))
         plt.title('Betweeness Centrality')
-        plt.savefig('Betweeness%d' % num)
+        plt.savefig('Betweeness%dist' % num)
         plt.clf()
         # 4.6 Degree centrality plot
         plt.hist(list(nx.eigenvector_centrality_numpy(graph).values()))
         plt.title('Eigenvector Centrality')
-        plt.savefig('Eigenvector%d' % num)
+        plt.savefig('Eigenvector%dist' % num)
         plt.clf()
         # 4.7 Degree centrality plot
         plt.hist(list(nx.katz_centrality(graph).values()))
         plt.title('Katz Centrality')
-        plt.savefig('Katz%d' % j)
+        plt.savefig('Katz%dist' % j)
         plt.clf()
         print("All centralities have been plotted and saved !!")
 
@@ -74,10 +74,60 @@ def v_star_calc(N, edges):
 
     return v_star
 
-# TODO: SINEXEIA APO EDO gia erotima 6
-def similarities_matrices_calc(graphs, edges):
+
+def similarities_matrices_calc(graphs):
     for idx in range(len(graphs)):
+
+        nodes = list(graphs[idx].nodes)
+        GD = {}
+        CN = {}
+        G = graphs[idx].to_undirected()  # graph must be undirected in order for functions to work
+
+        for first_node in nodes:
+            for second_node in nodes:
+                ## 6.1 find the common neighbors of nodes
+                neighbors = []
+                temp_neighbors = nx.common_neighbors(G, first_node, second_node)
+                for p in temp_neighbors:
+                    neighbors.append(p)
+                CN[first_node, second_node] = len(neighbors)
+
+                # 6.2 find the graph distance
+                try:
+                    distance = nx.shortest_path_length(G, first_node, second_node)
+                    GD[first_node, second_node] = distance
+                except:
+                    continue
+
+        # 6.3 find the jaccard coefficient
+        jaccard = nx.jaccard_coefficient(G)
+
+        #6.4 find the adamic adar
+        adamic = nx.adamic_adar_index(G)
+
+        #6.5 find the preferential attachment
+        preferential = nx.preferential_attachment(G)
+
+    return CN,GD,jaccard,adamic,preferential
+
+
+def predict_similarity(CN,GD,jaccard,adamic,preferential,eStar):
+        jac_co, dist, pref_attach = {}, {}, {}
+        for u, v, p in jaccard:
+            jac_co[u, v] = p
+        for u, v, p in adamic:
+            dist[u, v] = p
+        for u, v, p in preferential:
+            pref_attach[u, v] = p
+
+        distance = GD
+        neighbors = CN
+
+        # TODO: SINEXEIA APO EDO gia erotima 7 it just needs the prediction function applied to each matrix
+
         return
+
+
 
 
 
@@ -160,13 +210,18 @@ v_star = v_star_calc(N, nodes)
 e_star__a = e_star__a_calc(N, edges)
 e_star__b = e_star__b_calc(N, edges)
 
-# 6th part
-print('\n-- 6th part --------------------------------------')
+# 6th && 7th part
+print('\n-- 6th and 7th part --------------------------------------')
 for idx in range (N-1):
     print(idx)
     if e_star__a[idx] != set():
-        # TODO: SINEXEIA APO EDO gia erotima 6
-        similarities_matrices_calc(graphs, e_star__a[idx])
+        #6th part
+        CN,GD,jaccard,adamic,preferential = similarities_matrices_calc(graphs)
+        #7th part
+        # TODO: SINEXEIA APO EDO gia erotima 7
+        predict_similarity(CN,GD,jaccard,adamic,preferential,e_star__a[idx])
+
+
 
 
 
