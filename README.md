@@ -1,5 +1,5 @@
 # Social Networks Analysis
-A python program that was developed as a group project for a university assignment.
+A group project in Python that was developed for a university assignment on the subject of Social Networks Analysis.
 
 **Features:**
 - Processing of dataset "[Stack Overflow Temporal Network](https://snap.stanford.edu/data/sx-stackoverflow.html)" using the Pandas library.
