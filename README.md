@@ -8,4 +8,4 @@ A python program that was developed as a group project for a university assignme
 - Computing Degree Centrality, In-Degree Centrality, Out-Degree Centrality, Closeness Centrality, Betweeness Centrality, Eigenvector Centrality and Katz Centrality using the NetworkX library.
 
 **Group members involved in this project:**  
-Ioannidis Panagiotis, Paravantis Athanasios
+Ioannidis Panagiotis, Paravantis Athanasios, Nikas Dionisios
